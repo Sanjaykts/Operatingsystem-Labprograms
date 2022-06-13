@@ -1,0 +1,50 @@
+//Shared Memory
+//Writer code
+
+
+#include<stdlib.h>
+#include<string.h>
+#include<sys/shm.h>
+#include<stdio.h>
+#include<unistd.h>
+int main()
+{
+ int i;
+ void * shared_memory;
+ char buff[100];
+ int shmid;
+ shmid=shmget((key_t)2345,1024,0666|IPC_CREAT);
+ printf("key of shared memory is %d\n",shmid);
+ shared_memory=shmat(shmid,NULL,0);
+ printf("Process attached at %p\n",shared_memory);
+ printf("Enter some data to write to shared memory\n");
+ read(0,buff,100);
+ strcpy(shared_memory,buff);
+ printf("you wrote:%s\n",(char*)shared_memory);
+}
+//Readers Code
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/shm.h>
+#include<string.h>
+int main(){
+ int i;
+ void* shared_memory;
+ char buff[100];
+ int shmid;
+ shmid=shmget((key_t)2345,1024,0666);
+ printf("keyof sharedmemory is %d\n",shmid);
+ shared_memory=shmat(shmid,NULL,0);
+ printf("process attacehed at %p\n", shared_memory);
+ printf("Data read form shared memroyis %s\n",(char*)shared_memory);
+}
+
+/*
+output
+key of shared memory is 0
+process attached at 0x7fc8dd37000
+Enter some data to write to shared memory
+hi
+you wrote:hi
+*/
